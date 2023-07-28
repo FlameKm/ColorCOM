@@ -80,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // *槽
     on_checkBtn_clicked();
-    on_openUsartBtn_clicked();
+    on_openUartBtn_clicked();
 }
 
 MainWindow::~MainWindow()
@@ -96,7 +96,7 @@ void MainWindow::serialRead()
     if (ui->debugBox->isChecked()) {
         buffer = Serial.readAll();
         numRX += buffer.size();
-        recBuf.append(Serial.readAll());
+        recBuf.append(buffer);
         /*未接收到换行符不显示*/
         if (recBuf.contains("\r\n")) {
             int level = 0;
@@ -187,7 +187,7 @@ void MainWindow::on_sendBtn_clicked()
         }
         //字符串转化为16进制数   "1234" --> 0X1234
         //转换时会自动除去非16进制字符
-        sendData = sendData.fromHex(sendData);
+        sendData = QByteArray::fromHex(sendData);
     }
     //勾选了发送新行
     if (ui->newlineBox->isChecked()) {
@@ -208,14 +208,14 @@ void MainWindow::on_checkBtn_clicked()
     // 清除当前显示的端口号
     ui->comBox->clear();
     //检索端口号
-    for (auto info: QSerialPortInfo::availablePorts()) {
+    for (const auto& info: QSerialPortInfo::availablePorts()) {
         ui->comBox->addItem(info.portName());
     }
 }
 
-void MainWindow::on_openUsartBtn_clicked()
+void MainWindow::on_openUartBtn_clicked()
 {
-    if (ui->openUsartBtn->text() == QString("打开串口")) {  //串口未打开
+    if (ui->openUartBtn->text() == QString("打开串口")) {  //串口未打开
         //设置端口号F
         Serial.setPortName(ui->comBox->currentText());
         //设置波特率
@@ -271,7 +271,7 @@ void MainWindow::on_openUsartBtn_clicked()
         ui->stopBitBox->setEnabled(false);
         ui->checkBtn->setEnabled(false);
         //调整串口控制按钮的文字提示
-        ui->openUsartBtn->setText(QString("关闭串口"));
+        ui->openUartBtn->setText(QString("关闭串口"));
     }
     else { //串口已经打开
         Serial.close();
@@ -283,7 +283,7 @@ void MainWindow::on_openUsartBtn_clicked()
         ui->stopBitBox->setEnabled(true);
         ui->checkBtn->setEnabled(true);
         //调整串口控制按钮的文字提示
-        ui->openUsartBtn->setText(QString("打开串口"));
+        ui->openUartBtn->setText(QString("打开串口"));
     }
 
 }

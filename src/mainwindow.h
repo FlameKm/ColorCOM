@@ -2,8 +2,8 @@
 // Created by FlameKm on 2022/10/20.
 //
 
-#ifndef USARTTOOL_FOR_CLION_MAINWINDOW_H
-#define USARTTOOL_FOR_CLION_MAINWINDOW_H
+#ifndef UartTOOL_FOR_CLION_MAINWINDOW_H
+#define UartTOOL_FOR_CLION_MAINWINDOW_H
 
 #include <QMainWindow>
 #include <QSerialPort>
@@ -33,7 +33,7 @@ private slots:
 
     void on_sendBtn_clicked();
     void on_checkBtn_clicked();
-    void on_openUsartBtn_clicked();
+    void on_openUartBtn_clicked();
     void on_clrRecBtn_clicked();
 private:
     QTextCursor cursor;
@@ -54,4 +54,4 @@ private:
 };
 
 
-#endif //USARTTOOL_FOR_CLION_MAINWINDOW_H
+#endif //UartTOOL_FOR_CLION_MAINWINDOW_H

@@ -49,7 +49,7 @@ public:
     QComboBox *cheakOutBox;
     QComboBox *dataBitBox;
     QComboBox *baudBox;
-    QPushButton *openUsartBtn;
+    QPushButton *openUartBtn;
     QLabel *label_4;
     QComboBox *stopBitBox;
     QLabel *label_5;
@@ -209,14 +209,14 @@ public:
 
         gridLayout->addWidget(baudBox, 2, 1, 1, 1);
 
-        openUsartBtn = new QPushButton(centralwidget);
-        openUsartBtn->setObjectName("openUsartBtn");
-        sizePolicy2.setHeightForWidth(openUsartBtn->sizePolicy().hasHeightForWidth());
-        openUsartBtn->setSizePolicy(sizePolicy2);
-        openUsartBtn->setMinimumSize(QSize(80, 30));
-        openUsartBtn->setMaximumSize(QSize(80, 30));
+        openUartBtn = new QPushButton(centralwidget);
+        openUartBtn->setObjectName("openUartBtn");
+        sizePolicy2.setHeightForWidth(openUartBtn->sizePolicy().hasHeightForWidth());
+        openUartBtn->setSizePolicy(sizePolicy2);
+        openUartBtn->setMinimumSize(QSize(80, 30));
+        openUartBtn->setMaximumSize(QSize(80, 30));
 
-        gridLayout->addWidget(openUsartBtn, 7, 1, 1, 1);
+        gridLayout->addWidget(openUartBtn, 7, 1, 1, 1);
 
         label_4 = new QLabel(centralwidget);
         label_4->setObjectName("label_4");
@@ -394,7 +394,7 @@ public:
         dataBitBox->setPlaceholderText(QString());
         baudBox->setCurrentText(QString());
         baudBox->setPlaceholderText(QString());
-        openUsartBtn->setText(QCoreApplication::translate("MainWindow", "\346\211\223\345\274\200\344\270\262\345\217\243", nullptr));
+        openUartBtn->setText(QCoreApplication::translate("MainWindow", "\346\211\223\345\274\200\344\270\262\345\217\243", nullptr));
         label_4->setText(QCoreApplication::translate("MainWindow", "\345\245\207\345\201\266\346\240\241\351\252\214", nullptr));
         stopBitBox->setPlaceholderText(QString());
         label_5->setText(QCoreApplication::translate("MainWindow", "\344\270\262\345\217\243\346\223\215\344\275\234", nullptr));

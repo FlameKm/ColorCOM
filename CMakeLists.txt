@@ -6,7 +6,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(CMAKE_PREFIX_PATH "R:/Qt/6.4.0/mingw_64/lib/cmake")
+set(CMAKE_PREFIX_PATH "D:/Qt/6.5.2/mingw_64/lib/cmake")
 
 # &user begin
 find_package(Qt6 COMPONENTS SerialPort REQUIRED)
@@ -18,8 +18,12 @@ find_package(Qt6 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(Color_COM WIN32 Core/main.cpp Core/mainwindow.cpp Core/mainwindow.ui Core/mainwindow.h
-)
+add_executable(Color_COM WIN32
+        src/main.cpp
+        src/mainwindow.cpp
+        src/mainwindow.ui
+        src/mainwindow.h
+        )
 target_link_libraries(Color_COM
         Qt::Core
         Qt::Gui

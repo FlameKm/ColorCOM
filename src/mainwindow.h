@@ -12,10 +12,14 @@
 #include "ui_mainwindow.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui
+{
+class MainWindow;
+}
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow {
+class MainWindow: public QMainWindow
+{
 Q_OBJECT
 
 public:
@@ -28,17 +32,14 @@ public:
 private slots:
 
     void on_sendBtn_clicked();
-
     void on_checkBtn_clicked();
-
     void on_openUsartBtn_clicked();
-
-    void on_clsRecBtn_clicked();
-
+    void on_clrRecBtn_clicked();
 private:
     QTextCursor cursor;
     Ui::MainWindow *ui;
     std::map<QString, int> levelMap;
+    QByteArray recBuf;
 
     QColor colorVerbose;
     QColor colorDebug;

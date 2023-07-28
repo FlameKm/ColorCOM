@@ -5,14 +5,19 @@
 // You may need to build the project (run Qt uic code generator) to get "ui_mainwindow.h" resolved
 
 #include <QMessageBox>
+#include <qarraydata.h>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent) :
-        QMainWindow(parent), ui(new Ui::MainWindow) {
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent), ui(new Ui::MainWindow)
+{
     ui->setupUi(this);
-
-    // *usart init
+    recBuf = "";
+    /*统计*/
+    numTX = 0;
+    numRX = 0;
+    // *uart init
     Serial.setPortName("COM7");                 //设置端口号
     Serial.setBaudRate(115200);              //设置波特率
     Serial.setDataBits(QSerialPort::Data8);           //设置数据位
@@ -20,14 +25,13 @@ MainWindow::MainWindow(QWidget *parent) :
     Serial.setParity(QSerialPort::NoParity);          //设置奇偶校验
     Serial.setFlowControl(QSerialPort::NoFlowControl);//设置流控制模式
 
-    /*注册串口*/
+    // *注册串口
     connect(&Serial, &QSerialPort::readyRead, this, &MainWindow::serialRead);
-
+    recBuf = "";
     // *ui init
     ui->baudBox->addItem("9600");
     ui->baudBox->addItem("115200");
     ui->baudBox->setCurrentText("115200");
-
 
     ui->stopBitBox->addItem("1");
     ui->stopBitBox->addItem("2");
@@ -66,10 +70,8 @@ MainWindow::MainWindow(QWidget *parent) :
     /*用于显示光标移到末尾*/
     cursor = ui->receiveText->textCursor();
     cursor.movePosition(QTextCursor::End);
-    /*统计*/
-    numTX = 0;
-    numRX = 0;
-    /*优先级*/
+
+    //  优先级
     levelMap[QString("verbose")] = 5;
     levelMap[QString("debug")] = 4;
     levelMap[QString("info")] = 3;
@@ -81,80 +83,77 @@ MainWindow::MainWindow(QWidget *parent) :
     on_openUsartBtn_clicked();
 }
 
-MainWindow::~MainWindow() {
+MainWindow::~MainWindow()
+{
     delete ui;
 }
 
-void MainWindow::serialRead() {
+void MainWindow::serialRead()
+{
+    QByteArray buffer;
     ui->receiveText->setTextCursor(cursor);
     /*如果开启debug模式*/
     if (ui->debugBox->isChecked()) {
-        static QByteArray recBuf = "";
-        recBuf.append(Serial.readLine());
+        buffer = Serial.readAll();
+        numRX += buffer.size();
+        recBuf.append(Serial.readAll());
         /*未接收到换行符不显示*/
-        if (!recBuf.contains("\r\n")) {
-            return;
+        if (recBuf.contains("\r\n")) {
+            int level = 0;
+            /*设置颜色*/
+            if (recBuf.contains("verbose")) {
+                level = 5;
+                ui->receiveText->setTextColor(colorVerbose);
+            }
+            else if (recBuf.contains("debug")) {
+                level = 4;
+                ui->receiveText->setTextColor(colorDebug);
+            }
+            else if (recBuf.contains("info")) {
+                level = 3;
+                ui->receiveText->setTextColor(colorInfo);
+            }
+            else if (recBuf.contains("err")) {
+                level = 2;
+                ui->receiveText->setTextColor(colorError);
+            }
+            else if (recBuf.contains("war")) {
+                level = 1;
+                ui->receiveText->setTextColor(colorWarn);
+            }
+            else {
+                ui->receiveText->setTextColor(colorEmpty);
+            }
+            /*满足输出条件才输出*/
+            if (level <= levelMap[ui->debugLevelBox->currentText()]) {
+                /*支持中文显示*/
+                ui->receiveText->insertPlainText(QString::fromLocal8Bit(recBuf));
+                //ui->receiveText->insertPlainText(recBuf);
+            }
+            recBuf.clear();
         }
-        int level = 0;
-        /*设置颜色*/
-        if (recBuf.contains("verbose")) {
-            level = 5;
-            ui->receiveText->setTextColor(colorVerbose);
-        } else if (recBuf.contains("debug")) {
-            level = 4;
-            ui->receiveText->setTextColor(colorDebug);
-        } else if (recBuf.contains("info")) {
-            level = 3;
-            ui->receiveText->setTextColor(colorInfo);
-        } else if (recBuf.contains("err")) {
-            level = 2;
-            ui->receiveText->setTextColor(colorError);
-        } else if (recBuf.contains("war")) {
-            level = 1;
-            ui->receiveText->setTextColor(colorWarn);
-        } else {
-            ui->receiveText->setTextColor(colorEmpty);
-        }
-        /*满足输出条件才输出*/
-        if (level <= levelMap[ui->debugLevelBox->currentText()]) {
-            /*支持中文显示*/
-            ui->receiveText->insertPlainText(QString::fromLocal8Bit(recBuf));
-            //ui->receiveText->insertPlainText(recBuf);
-        }
-        numRX += recBuf.size();
-        recBuf.clear();
-    } else {
-        QByteArray buffer = Serial.readAll();
-        if (ui->show16Box->
-
-                isChecked()
-
-                ) {
+    }
+    else {
+        buffer = Serial.readLine();
+        if (ui->show16Box->isChecked()) {
             buffer = buffer.toHex();
         }
-        numRX += buffer.
-
-                size();
-
-        ui->receiveText->
-                insertPlainText(QString::fromLocal8Bit(buffer)
+        numRX += buffer.size();
+        ui->receiveText->setTextColor(colorEmpty);
+        ui->receiveText->insertPlainText(QString::fromLocal8Bit(buffer)
         );
     }
-/*记录数据*/
+    /*记录数据*/
     QString strTxLabel = "RX:";
-    strTxLabel.
+    strTxLabel.append(QString::number(numRX));
 
-            append(QString::number(numRX));
-
-    ui->rxLabel->
-            setText(strTxLabel);
-/*显示最新消息*/
-    ui->receiveText->
-            moveCursor(QTextCursor::End);
+    ui->rxLabel->setText(strTxLabel);
+    /*显示最新消息*/
+    ui->receiveText->moveCursor(QTextCursor::End);
 }
 
-
-void MainWindow::on_sendBtn_clicked() {
+void MainWindow::on_sendBtn_clicked()
+{
     if (!Serial.isOpen()) {//判断串口是否正常打开
         QMessageBox::warning(nullptr, "提示", "请打开串口！");
         return;
@@ -171,13 +170,17 @@ void MainWindow::on_sendBtn_clicked() {
         for (int i = 0; i < cnt; i++) { //判断是否有非16进制字符
             if (data[i] >= '0' && (data[i] <= '9')) {
                 continue;
-            } else if (data[i] >= 'a' && (data[i] <= 'f')) {
+            }
+            else if (data[i] >= 'a' && (data[i] <= 'f')) {
                 continue;
-            } else if (data[i] >= 'A' && (data[i] <= 'F')) {
+            }
+            else if (data[i] >= 'A' && (data[i] <= 'F')) {
                 continue;
-            } else if (data[i] == ' ') {     //输入为空格
+            }
+            else if (data[i] == ' ') {     //输入为空格
                 continue;
-            } else {
+            }
+            else {
                 QMessageBox::warning(nullptr, "提示", "输入非16进制字符！");
                 return;
             }
@@ -200,16 +203,18 @@ void MainWindow::on_sendBtn_clicked() {
     Serial.write(sendData); //通过串口发送数据
 }
 
-void MainWindow::on_checkBtn_clicked() {
+void MainWindow::on_checkBtn_clicked()
+{
     // 清除当前显示的端口号
     ui->comBox->clear();
     //检索端口号
-            foreach(const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
-            ui->comBox->addItem(info.portName());
-        }
+    for (auto info: QSerialPortInfo::availablePorts()) {
+        ui->comBox->addItem(info.portName());
+    }
 }
 
-void MainWindow::on_openUsartBtn_clicked() {
+void MainWindow::on_openUsartBtn_clicked()
+{
     if (ui->openUsartBtn->text() == QString("打开串口")) {  //串口未打开
         //设置端口号F
         Serial.setPortName(ui->comBox->currentText());
@@ -254,7 +259,6 @@ void MainWindow::on_openUsartBtn_clicked() {
         //设置流控制模式
         Serial.setFlowControl(QSerialPort::NoFlowControl);
         //打开串口
-
         if (!Serial.open(QIODevice::ReadWrite)) {
             QMessageBox::warning(nullptr, "提示", "串口打开失败！");
             return;
@@ -268,7 +272,8 @@ void MainWindow::on_openUsartBtn_clicked() {
         ui->checkBtn->setEnabled(false);
         //调整串口控制按钮的文字提示
         ui->openUsartBtn->setText(QString("关闭串口"));
-    } else { //串口已经打开
+    }
+    else { //串口已经打开
         Serial.close();
         // 使能串口设置控件
         ui->comBox->setEnabled(true);
@@ -283,7 +288,8 @@ void MainWindow::on_openUsartBtn_clicked() {
 
 }
 
-void MainWindow::on_clsRecBtn_clicked() {
+void MainWindow::on_clrRecBtn_clicked()
+{
     ui->receiveText->clear();
     numRX = 0;
     numTX = 0;

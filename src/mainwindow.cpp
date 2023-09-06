@@ -52,8 +52,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->debugBox->setChecked(true);
     ui->newlineBox->setChecked(true);
 
-    /*!YaHei Consolas Hybrid是自己安装的字体*/
-    ui->receiveText->setFont(QFont("YaHei Consolas Hybrid", 10, QFont::Normal));
+    // 这个字体是自己设置的字体，需要安装
+
+    ui->receiveText->setFont(QFont("JetBrains Mono", 9, QFont::Normal));
+    ui->sendEdit->setFont(QFont("JetBrains Mono", 9, QFont::Normal));
 
     QPalette pal = ui->receiveText->palette();
     pal.setBrush(QPalette::Base, Qt::black);
@@ -61,7 +63,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->receiveText->setReadOnly(false);
     ui->receiveText->setTextColor(Qt::white);
     /*对应日志输出颜色*/
-    colorVerbose.setRgb(0xff, 0xff, 0x55);
+    colorVerbose.setRgb(0x99, 0x99, 0x55);
     colorInfo.setRgb(0x00, 0xcc, 0x20);
     colorError.setRgb(0xff, 0x00, 0x00);
     colorDebug.setRgb(0x00, 0xdd, 0xff);
@@ -94,7 +96,8 @@ void MainWindow::serialRead()
     ui->receiveText->setTextCursor(cursor);
     /*如果开启debug模式*/
     if (ui->debugBox->isChecked()) {
-        buffer = Serial.readAll();
+        buffer = Serial.readLine();
+        begin:
         numRX += buffer.size();
         recBuf.append(buffer);
         /*未接收到换行符不显示*/
@@ -131,14 +134,19 @@ void MainWindow::serialRead()
                 //ui->receiveText->insertPlainText(recBuf);
             }
             recBuf.clear();
+            buffer = Serial.readLine();
+            if (buffer.size() != 0) {
+                goto begin;
+            }
         }
     }
     else {
-        buffer = Serial.readLine();
+        buffer = Serial.readAll();
         if (ui->show16Box->isChecked()) {
-            buffer = buffer.toHex();
+            buffer = buffer.toHex(' ');
         }
         numRX += buffer.size();
+        buffer.replace("\r\n", "\n");
         ui->receiveText->setTextColor(colorEmpty);
         ui->receiveText->insertPlainText(QString::fromLocal8Bit(buffer)
         );
@@ -161,7 +169,8 @@ void MainWindow::on_sendBtn_clicked()
     //toPlainText() 转换为纯文本格式
     //toUtf8() 转换为UTF-8 编码
     QByteArray sendData = ui->sendEdit->toPlainText().toUtf8();
-
+    sendData.replace('\n', "\r\n");
+    sendData.replace("\r\r\n", "\r\n");
     //勾选了16进制发送
     if (ui->send16Box->isChecked()) {
         //判断是否有非16进制字符
@@ -208,7 +217,7 @@ void MainWindow::on_checkBtn_clicked()
     // 清除当前显示的端口号
     ui->comBox->clear();
     //检索端口号
-    for (const auto& info: QSerialPortInfo::availablePorts()) {
+    for (const auto &info : QSerialPortInfo::availablePorts()) {
         ui->comBox->addItem(info.portName());
     }
 }
@@ -222,39 +231,29 @@ void MainWindow::on_openUartBtn_clicked()
         Serial.setBaudRate(ui->baudBox->currentText().toInt());
         //设置数据位
         switch (ui->dataBitBox->currentText().toInt()) {
-            case 8:
-                Serial.setDataBits(QSerialPort::Data8);
+            case 8:Serial.setDataBits(QSerialPort::Data8);
                 break;
-            case 7:
-                Serial.setDataBits(QSerialPort::Data7);
+            case 7:Serial.setDataBits(QSerialPort::Data7);
                 break;
-            case 6:
-                Serial.setDataBits(QSerialPort::Data6);
+            case 6:Serial.setDataBits(QSerialPort::Data6);
                 break;
-            case 5:
-                Serial.setDataBits(QSerialPort::Data5);
+            case 5:Serial.setDataBits(QSerialPort::Data5);
                 break;
-            default:
-                break;
+            default:break;
         }
         //设置停止位
         switch (ui->stopBitBox->currentText().toInt()) {
-            case 1:
-                Serial.setStopBits(QSerialPort::OneStop);
+            case 1:Serial.setStopBits(QSerialPort::OneStop);
                 break;
-            case 2:
-                Serial.setStopBits(QSerialPort::TwoStop);
+            case 2:Serial.setStopBits(QSerialPort::TwoStop);
                 break;
-            default:
-                break;
+            default:break;
         }
         //设置校验方式
         switch (ui->cheakOutBox->currentIndex()) {
-            case 0:
-                Serial.setParity(QSerialPort::NoParity);
+            case 0:Serial.setParity(QSerialPort::NoParity);
                 break;
-            default:
-                break;
+            default:break;
         }
         //设置流控制模式
         Serial.setFlowControl(QSerialPort::NoFlowControl);

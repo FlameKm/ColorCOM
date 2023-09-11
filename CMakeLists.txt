@@ -19,12 +19,12 @@ find_package(Qt6 COMPONENTS
         Widgets
         REQUIRED)
 
-add_executable(Color_COM WIN32
-        src/main.cpp
-        src/mainwindow.cpp
-        src/mainwindow.ui
-        src/mainwindow.h
+FILE(GLOB app_sources
+        src/*
+        res/res.qrc
 )
+
+add_executable(Color_COM WIN32 ${app_sources})
 target_link_libraries(Color_COM
         Qt::Core
         Qt::Gui

@@ -6,6 +6,8 @@ debug信息参照Android
 # 字体下载
 https://www.jetbrains.com/lp/mono/
 
+新版本中字体内嵌到程序中
+
 # TODO
 本项目为用于早期学习的入门项目，在代码上有很多需要改进的地方
 比如结构太乱，嵌套太多，字体没有嵌套到代码等

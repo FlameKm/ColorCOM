@@ -6,6 +6,7 @@
 
 #include <QMessageBox>
 #include <qarraydata.h>
+#include <QFontDatabase>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -52,8 +53,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->debugBox->setChecked(true);
     ui->newlineBox->setChecked(true);
 
-    // 这个字体是自己设置的字体，需要安装
-
+    QFontDatabase::addApplicationFont(":font/JetBrainsMono-Medium.ttf");
     ui->receiveText->setFont(QFont("JetBrains Mono", 9, QFont::Normal));
     ui->sendEdit->setFont(QFont("JetBrains Mono", 9, QFont::Normal));
 

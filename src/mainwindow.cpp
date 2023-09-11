@@ -68,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent)
     colorError.setRgb(0xff, 0x00, 0x00);
     colorDebug.setRgb(0x00, 0xdd, 0xff);
     colorWarn.setRgb(0xcc, 0xcc, 0x00);
-    colorEmpty.setRgb(0xaa, 0xaa, 0x00);
+    colorEmpty.setRgb(0xcc, 0xcc, 0xcc);
     /*用于显示光标移到末尾*/
     cursor = ui->receiveText->textCursor();
     cursor.movePosition(QTextCursor::End);

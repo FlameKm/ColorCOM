@@ -104,6 +104,7 @@ void MainWindow::serialRead()
         recBuf.append(buffer);
         /*未接收到换行符不显示*/
         if (recBuf.contains("\r\n")) {
+            buffer.replace("\r", "");
             int level = 0;
             /*设置颜色*/
             if (recBuf.contains("verbose")) {
@@ -144,11 +145,12 @@ void MainWindow::serialRead()
     }
     else {
         buffer = Serial.readAll();
+        numRX += buffer.size();
+        buffer.replace("\r", "");
         if (ui->show16Box->isChecked()) {
             buffer = buffer.toHex(' ');
+            buffer.push_back(' ');
         }
-        numRX += buffer.size();
-        buffer.replace("\r\n", "\n");
         ui->receiveText->setTextColor(colorEmpty);
         ui->receiveText->insertPlainText(QString::fromLocal8Bit(buffer)
         );

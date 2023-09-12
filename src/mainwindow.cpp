@@ -6,6 +6,7 @@
 
 #include <QMessageBox>
 #include <qarraydata.h>
+#include <QWheelEvent>
 #include <QFontDatabase>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -53,9 +54,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->debugBox->setChecked(true);
     ui->newlineBox->setChecked(true);
 
+    pointSize = 9;
     QFontDatabase::addApplicationFont(":font/JetBrainsMono-Medium.ttf");
-    ui->receiveText->setFont(QFont("JetBrains Mono", 9, QFont::Normal));
-    ui->sendEdit->setFont(QFont("JetBrains Mono", 9, QFont::Normal));
+    ui->receiveText->setFont(QFont("JetBrains Mono", pointSize, QFont::Normal));
+    ui->sendEdit->setFont(QFont("JetBrains Mono", pointSize, QFont::Normal));
 
     QPalette pal = ui->receiveText->palette();
     pal.setBrush(QPalette::Base, Qt::black);
@@ -231,29 +233,39 @@ void MainWindow::on_openUartBtn_clicked()
         Serial.setBaudRate(ui->baudBox->currentText().toInt());
         //设置数据位
         switch (ui->dataBitBox->currentText().toInt()) {
-            case 8:Serial.setDataBits(QSerialPort::Data8);
+            case 8:
+                Serial.setDataBits(QSerialPort::Data8);
                 break;
-            case 7:Serial.setDataBits(QSerialPort::Data7);
+            case 7:
+                Serial.setDataBits(QSerialPort::Data7);
                 break;
-            case 6:Serial.setDataBits(QSerialPort::Data6);
+            case 6:
+                Serial.setDataBits(QSerialPort::Data6);
                 break;
-            case 5:Serial.setDataBits(QSerialPort::Data5);
+            case 5:
+                Serial.setDataBits(QSerialPort::Data5);
                 break;
-            default:break;
+            default:
+                break;
         }
         //设置停止位
         switch (ui->stopBitBox->currentText().toInt()) {
-            case 1:Serial.setStopBits(QSerialPort::OneStop);
+            case 1:
+                Serial.setStopBits(QSerialPort::OneStop);
                 break;
-            case 2:Serial.setStopBits(QSerialPort::TwoStop);
+            case 2:
+                Serial.setStopBits(QSerialPort::TwoStop);
                 break;
-            default:break;
+            default:
+                break;
         }
         //设置校验方式
         switch (ui->cheakOutBox->currentIndex()) {
-            case 0:Serial.setParity(QSerialPort::NoParity);
+            case 0:
+                Serial.setParity(QSerialPort::NoParity);
                 break;
-            default:break;
+            default:
+                break;
         }
         //设置流控制模式
         Serial.setFlowControl(QSerialPort::NoFlowControl);
@@ -287,11 +299,51 @@ void MainWindow::on_openUartBtn_clicked()
 
 }
 
-void MainWindow::on_clrRecBtn_clicked()
+void MainWindow::on_clearRecBtn_clicked()
 {
     ui->receiveText->clear();
     numRX = 0;
     numTX = 0;
     ui->txLabel->setText("TX:0");
     ui->rxLabel->setText("RX:0");
+}
+
+/**
+ * 滚轮实现放大缩小字体
+ * @param event
+ */
+void MainWindow::wheelEvent(QWheelEvent *event)
+{
+    if (QApplication::keyboardModifiers() == Qt::ControlModifier) {
+        if (event->angleDelta().y() > 0) {
+            pointSize++;
+            pointSize = (pointSize > 25) ? 25 : pointSize;
+        }
+        else if (event->angleDelta().y() < 0) {
+            pointSize--;
+            pointSize = (pointSize < 6) ? 6 : pointSize;
+        }
+        QString styleSheet = QString("QTextBrowser { font-size: %1pt; }").arg(pointSize);
+        ui->receiveText->setStyleSheet(styleSheet);
+    }
+
+}
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if (event->modifiers() == Qt::ControlModifier) {
+        if (event->key() == Qt::Key_Plus || event->key() == Qt::Key_Equal) {
+            pointSize++;
+            pointSize = (pointSize > 25) ? 25 : pointSize;
+            QString styleSheet = QString("QTextBrowser { font-size: %1pt; }").arg(pointSize);
+            ui->receiveText->setStyleSheet(styleSheet);
+
+        }
+        else if (event->key() == Qt::Key_Minus) {
+            pointSize--;
+            pointSize = (pointSize < 6) ? 6 : pointSize;
+            QString styleSheet = QString("QTextBrowser { font-size: %1pt; }").arg(pointSize);
+            ui->receiveText->setStyleSheet(styleSheet);
+        }
+
+    }
 }

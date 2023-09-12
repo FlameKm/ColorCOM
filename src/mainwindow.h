@@ -30,11 +30,11 @@ public:
     QSerialPort Serial;
 
 private slots:
-
     void on_sendBtn_clicked();
     void on_checkBtn_clicked();
     void on_openUartBtn_clicked();
-    void on_clrRecBtn_clicked();
+    void on_clearRecBtn_clicked();
+
 private:
     QTextCursor cursor;
     Ui::MainWindow *ui;
@@ -49,8 +49,12 @@ private:
     QColor colorEmpty;
     long long numTX;
     long long numRX;
+    int pointSize = 9;
 
     void serialRead();
+protected:
+    void keyPressEvent(QKeyEvent *event);
+    void wheelEvent(QWheelEvent *event);
 };
 
 

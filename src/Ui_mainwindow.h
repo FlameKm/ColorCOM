@@ -59,7 +59,7 @@ public:
     QSpacerItem *verticalSpacer_2;
     QGridLayout *gridLayout_3;
     QComboBox *debugLevelBox;
-    QPushButton *clrRecBtn;
+    QPushButton *clearRecBtn;
     QLabel *label_6;
     QCheckBox *debugBox;
     QCheckBox *show16Box;
@@ -293,16 +293,16 @@ public:
 
         gridLayout_3->addWidget(debugLevelBox, 3, 1, 1, 1);
 
-        clrRecBtn = new QPushButton(centralwidget);
-        clrRecBtn->setObjectName("clrRecBtn");
-        clrRecBtn->setEnabled(true);
-        sizePolicy2.setHeightForWidth(clrRecBtn->sizePolicy().hasHeightForWidth());
-        clrRecBtn->setSizePolicy(sizePolicy2);
-        clrRecBtn->setMinimumSize(QSize(80, 60));
-        clrRecBtn->setMaximumSize(QSize(80, 60));
-        clrRecBtn->setIconSize(QSize(16, 20));
+        clearRecBtn = new QPushButton(centralwidget);
+        clearRecBtn->setObjectName("clearRecBtn");
+        clearRecBtn->setEnabled(true);
+        sizePolicy2.setHeightForWidth(clearRecBtn->sizePolicy().hasHeightForWidth());
+        clearRecBtn->setSizePolicy(sizePolicy2);
+        clearRecBtn->setMinimumSize(QSize(80, 60));
+        clearRecBtn->setMaximumSize(QSize(80, 60));
+        clearRecBtn->setIconSize(QSize(16, 20));
 
-        gridLayout_3->addWidget(clrRecBtn, 0, 1, 3, 1);
+        gridLayout_3->addWidget(clearRecBtn, 0, 1, 3, 1);
 
         label_6 = new QLabel(centralwidget);
         label_6->setObjectName("label_6");
@@ -401,7 +401,7 @@ public:
         label_3->setText(QCoreApplication::translate("MainWindow", "\346\225\260\346\215\256\344\275\215", nullptr));
         label->setText(QCoreApplication::translate("MainWindow", "\346\263\242\347\211\271\347\216\207", nullptr));
         debugLevelBox->setPlaceholderText(QString());
-        clrRecBtn->setText(QCoreApplication::translate("MainWindow", "\346\270\205\351\231\244", nullptr));
+        clearRecBtn->setText(QCoreApplication::translate("MainWindow", "\346\270\205\351\231\244", nullptr));
         label_6->setText(QCoreApplication::translate("MainWindow", "debug level", nullptr));
         debugBox->setText(QCoreApplication::translate("MainWindow", "debug", nullptr));
         show16Box->setText(QCoreApplication::translate("MainWindow", "16bit", nullptr));
